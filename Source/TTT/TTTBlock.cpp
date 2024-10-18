@@ -18,27 +18,36 @@ ATTTBlock::ATTTBlock()
 	BlockMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	BlockMesh->SetCollisionObjectType(ECC_WorldDynamic);
 	
-	BlockMesh->OnClicked.AddDynamic(this, &ATTTBlock::OnBlockClicked);
-	if (BlockMesh->OnClicked.IsBound())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("BlockMesh OnClicked event bound successfully."));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to bind BlockMesh OnClicked event."));
-	}
 }
 
-void ATTTBlock::OnBlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
+void ATTTBlock::BlockClicked(int PlayerNum)
 {
 	if (GameManager)
 	{
 		GameManager->HandleMove(X, Y);
-		
-		if (MaterialInstance_Player1 && MaterialInstance_Empty && MaterialInstance_Player2)
+		BlockChangeColor(PlayerNum);
+	}
+}
+
+void ATTTBlock::BlockChangeColor(int PlayerNum)
+{
+	
+	if (MaterialInstance_Player1 && MaterialInstance_Empty && MaterialInstance_Player2)
+	{
+		switch (PlayerNum)
 		{
-			BlockMesh->SetMaterial(0, MaterialInstance_Player1);
+			case (1):
+			{	
+				BlockMesh->SetMaterial(0, MaterialInstance_Player1);
+				break;
+			}
+			case (2):
+			{	
+				BlockMesh->SetMaterial(0, MaterialInstance_Player2);
+				break;
+			}
 		}
+			
 	}
 }
 

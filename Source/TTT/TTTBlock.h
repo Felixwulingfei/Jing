@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TTTGameManager.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/Actor.h"
 #include "TTTBlock.generated.h"
+class UTTTGameManager;
+
 
 UCLASS()
 class TTT_API ATTTBlock : public AActor
@@ -27,8 +28,12 @@ public:
 	
 	// Function to handle block click
 	UFUNCTION()
-	void OnBlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
-public:    
+	void BlockClicked(int PlayerNum);
+	
+	UFUNCTION()
+	void BlockChangeColor(int PlayerNum);
+
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
 	int32 X;
 
@@ -47,6 +52,5 @@ public:
 	UMaterialInstance* MaterialInstance_Player1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Materials")
-	UMaterialInstance* MaterialInstance_Player2
-	;
+	UMaterialInstance* MaterialInstance_Player2;
 };

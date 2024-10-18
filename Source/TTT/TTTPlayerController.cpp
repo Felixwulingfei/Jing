@@ -151,6 +151,8 @@ void ATTTPlayerController::InitializeBoard()
 				NewBlock->X = X;
 				NewBlock->Y = Y;
 				NewBlock->GameManager = GameManager;
+				
+				GameManager->Blocks.Add(NewBlock);
 			}
 		}
 	}
@@ -181,7 +183,7 @@ void ATTTPlayerController::PerformMouseClickTrace()
 
 				if (ATTTBlock* Block = Cast<ATTTBlock>(HitActor))
 				{
-					Block->OnBlockClicked(nullptr, FKey());  // Trigger block clicked logic
+					Block->BlockClicked(GameManager->CurrentPlayer);  // Trigger block clicked logic
 				}
 
 				// Optionally draw debug line to visualize the trace
