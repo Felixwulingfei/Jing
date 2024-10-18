@@ -35,12 +35,9 @@ void ATTTBlock::OnBlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPres
 	{
 		GameManager->HandleMove(X, Y);
 		
-		UMaterialInstanceDynamic* DynamicMaterial = BlockMesh->CreateAndSetMaterialInstanceDynamic(0);
-
-		if (DynamicMaterial)
+		if (MaterialInstance_Player1 && MaterialInstance_Empty && MaterialInstance_Player2)
 		{
-			FLinearColor Color = FLinearColor(GameManager->Board[X][Y] % 2, 0, GameManager->Board[X][Y] % 2); 
-			DynamicMaterial->SetVectorParameterValue("BaseColor", Color);
+			BlockMesh->SetMaterial(0, MaterialInstance_Player1);
 		}
 	}
 }

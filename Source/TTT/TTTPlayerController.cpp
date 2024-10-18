@@ -10,7 +10,9 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
+#include "TTTBlock.h"
 #include "Engine/LocalPlayer.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -20,12 +22,15 @@ ATTTPlayerController::ATTTPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+	
+	GameManager = CreateDefaultSubobject<UTTTGameManager>(TEXT("GameManager"));
 }
 
 void ATTTPlayerController::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	InitializeBoard();
 }
 
 void ATTTPlayerController::SetupInputComponent()
@@ -53,6 +58,9 @@ void ATTTPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &ATTTPlayerController::OnTouchTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &ATTTPlayerController::OnTouchReleased);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &ATTTPlayerController::OnTouchReleased);
+
+		
+		EnhancedInputComponent->BindAction(SeTLaserAction, ETriggerEvent::Triggered, this, &ATTTPlayerController::PerformMouseClickTrace);
 	}
 	else
 	{
@@ -122,4 +130,64 @@ void ATTTPlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+void ATTTPlayerController::InitializeBoard()
+{
+	FVector BlockLocation;
+	FActorSpawnParameters SpawnParams;
+
+	for (int32 X = 0; X < 3; X++)
+	{
+		for (int32 Y = 0; Y < 3; Y++)
+		{
+			BlockLocation = FVector(X * 200.f + 1000, Y * 200.f + 1000, 0.f);  // Adjust spacing as necessary
+			ATTTBlock* NewBlock = GetWorld()->SpawnActor<ATTTBlock>(BlockClass.Get(), BlockLocation, FRotator::ZeroRotator, SpawnParams);
+
+
+			// Set block properties
+			if (NewBlock)
+			{
+				NewBlock->X = X;
+				NewBlock->Y = Y;
+				NewBlock->GameManager = GameManager;
+			}
+		}
+	}
+}
+
+void ATTTPlayerController::PerformMouseClickTrace()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PlayerController) return;
+
+	FVector WorldLocation, WorldDirection;
+	if (PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+	{
+		FVector TraceStart = WorldLocation;
+		FVector TraceEnd = TraceStart + (WorldDirection * 10000.f);  // Set the trace distance to 10,000 units
+
+		FHitResult HitResult;
+
+		// Perform the line trace
+		GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility);
+
+		if (HitResult.IsValidBlockingHit())
+		{
+			AActor* HitActor = HitResult.GetActor();
+			if (HitActor)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActor->GetName());
+
+				if (ATTTBlock* Block = Cast<ATTTBlock>(HitActor))
+				{
+					Block->OnBlockClicked(nullptr, FKey());  // Trigger block clicked logic
+				}
+
+				// Optionally draw debug line to visualize the trace
+				DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2.0f);
+				DrawDebugPoint(GetWorld(), HitResult.Location, 10.0f, FColor::Green, false, 2.0f);
+			}
+		}
+	}
 }

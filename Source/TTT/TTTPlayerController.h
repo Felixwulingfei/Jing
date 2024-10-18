@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TTTGameManager.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "TTTPlayerController.generated.h"
@@ -41,7 +42,9 @@ public:
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationTouchAction;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* SeTLaserAction;
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -57,7 +60,17 @@ protected:
 	void OnSetDestinationReleased();
 	void OnTouchTriggered();
 	void OnTouchReleased();
-
+	
+	// A reference to your GameManager UObject
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
+	UTTTGameManager* GameManager;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
+	TSubclassOf<class ATTTBlock> BlockClass;
+	
+	// Initialize the board with blocks
+	void InitializeBoard();
+	void PerformMouseClickTrace();
 private:
 	FVector CachedDestination;
 
