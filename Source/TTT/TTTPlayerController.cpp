@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameOptionBlock.h"
 #include "TTTBlock.h"
 #include "Engine/LocalPlayer.h"
 #include "Kismet/GameplayStatics.h"
@@ -141,7 +142,7 @@ void ATTTPlayerController::InitializeBoard()
 	{
 		for (int32 Y = 0; Y < 3; Y++)
 		{
-			BlockLocation = FVector(X * 200.f + 1000, Y * 200.f + 1000, 0.f);  // Adjust spacing as necessary
+			BlockLocation = FVector(X * 200.f + 1000, Y * 200.f + 1000, 0.f); 
 			ATTTBlock* NewBlock = GetWorld()->SpawnActor<ATTTBlock>(BlockClass.Get(), BlockLocation, FRotator::ZeroRotator, SpawnParams);
 
 
@@ -156,15 +157,29 @@ void ATTTPlayerController::InitializeBoard()
 			}
 		}
 	}
+	
+	BlockLocation = FVector(800.f, 1500.f, 0.f); 
+	AGameOptionBlock* ModeBlock = GetWorld()->SpawnActor<AGameOptionBlock>(ModeBlockClass.Get(), BlockLocation, FRotator::ZeroRotator, SpawnParams);
+	if (ModeBlock)
+	{
+		ModeBlock->GameManager = GameManager;
+	}
+
+	BlockLocation = FVector(800.f, 1700.f, 0.f);
+	AGameOptionBlock* DifficultyBlock = GetWorld()->SpawnActor<AGameOptionBlock>(DifficultyBlockClass.Get(), BlockLocation, FRotator::ZeroRotator, SpawnParams);
+	if (DifficultyBlock)
+	{
+		DifficultyBlock->GameManager = GameManager;
+	}
 }
 
 void ATTTPlayerController::PerformMouseClickTrace()
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (!PlayerController) return;
-
+	if (bIsCooldownActive) return;
+	
+	GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, this, &ATTTPlayerController::ResetCooldown, CooldownDuration, false);
 	FVector WorldLocation, WorldDirection;
-	if (PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+	if (this->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
 	{
 		FVector TraceStart = WorldLocation;
 		FVector TraceEnd = TraceStart + (WorldDirection * 10000.f);  // Set the trace distance to 10,000 units
@@ -182,12 +197,22 @@ void ATTTPlayerController::PerformMouseClickTrace()
 				if (ATTTBlock* Block = Cast<ATTTBlock>(HitActor))
 				{
 					Block->BlockClicked(GameManager->CurrentPlayer);  // Trigger block clicked logic
+					bIsCooldownActive = true;
 				}
-
-				// Optionally draw debug line to visualize the trace
+				if (AGameOptionBlock* Block = Cast<AGameOptionBlock>(HitActor))
+				{
+					Block->OnBlockClicked();  // Trigger block clicked logic
+					bIsCooldownActive = true;
+				}
+				
 				DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2.0f);
 				DrawDebugPoint(GetWorld(), HitResult.Location, 10.0f, FColor::Green, false, 2.0f);
 			}
 		}
 	}
+}
+
+void ATTTPlayerController::ResetCooldown()
+{
+	bIsCooldownActive = false;
 }

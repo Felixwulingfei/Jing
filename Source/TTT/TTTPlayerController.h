@@ -62,15 +62,27 @@ protected:
 	void OnTouchReleased();
 	
 	// A reference to your GameManager UObject
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTTTGameManager* GameManager;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class ATTTBlock> BlockClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AGameOptionBlock> ModeBlockClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AGameOptionBlock> DifficultyBlockClass;
+	
+	FTimerHandle CooldownTimerHandle;
+	float CooldownDuration = 0.5f;
+	bool bIsCooldownActive = false;
 	
 	// Initialize the board with blocks
 	void InitializeBoard();
 	void PerformMouseClickTrace();
+	void ResetCooldown();
+
 private:
 	FVector CachedDestination;
 

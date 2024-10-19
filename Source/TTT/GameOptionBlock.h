@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TTTGameManager.h"
 #include "GameFramework/Actor.h"
 #include "GameOptionBlock.generated.h"
 
@@ -22,5 +23,15 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+	UStaticMeshComponent* BlockMesh;
 
+	void OnBlockClicked();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
+	UTTTGameManager* GameManager;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
+	FString OptionType;  
 };
