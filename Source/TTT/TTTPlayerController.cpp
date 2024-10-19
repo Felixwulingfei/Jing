@@ -179,8 +179,6 @@ void ATTTPlayerController::PerformMouseClickTrace()
 			AActor* HitActor = HitResult.GetActor();
 			if (HitActor)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActor->GetName());
-
 				if (ATTTBlock* Block = Cast<ATTTBlock>(HitActor))
 				{
 					Block->BlockClicked(GameManager->CurrentPlayer);  // Trigger block clicked logic

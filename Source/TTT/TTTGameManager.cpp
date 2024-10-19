@@ -33,7 +33,6 @@ void UTTTGameManager::HandleMove(int32 X, int32 Y)
 	{
 		Board[X][Y] = CurrentPlayer;  // Set the current player's symbol
 
-		CheckWinCondition();
 
 		// If it's AI's turn, trigger AI move
 		if (GameMode == EGameMode::GM_AIVsPlayer)
@@ -63,10 +62,54 @@ void UTTTGameManager::HandleMove(int32 X, int32 Y)
 		{
 			CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
 		}
+		
+		CheckWinCondition(X,Y);
 	}
 }
 
-void UTTTGameManager::CheckWinCondition()
+void UTTTGameManager::CheckWinCondition(int32 X, int32 Y)
 {
-	// Add win condition check logic here
+	int32 Player = Board[X][Y];
+
+	if (Board[X][0] == Player && Board[X][1] == Player && Board[X][2] == Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player %d wins : row %d"), Player, X);
+		return;
+	}
+
+	if (Board[0][Y] == Player && Board[1][Y] == Player && Board[2][Y] == Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player %d wins : column %d"), Player, Y);
+		return;
+	}
+
+	if (X == Y && Board[0][0] == Player && Board[1][1] == Player && Board[2][2] == Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player %d wins"), Player);
+		return;
+	}
+
+	if (X + Y == 2 && Board[0][2] == Player && Board[1][1] == Player && Board[2][0] == Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player %d wins"), Player);
+		return;
+	}
+
+	bool bBoardFull = true;
+	for (int32 i = 0; i < 3; i++)
+	{
+		for (int32 j = 0; j < 3; j++)
+		{
+			if (Board[i][j] == 0)  // If there's at least one empty cell
+			{
+				bBoardFull = false;
+				break;
+			}
+		}
+	}
+
+	if (bBoardFull)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("The game is a draw"));
+	}
 }

@@ -34,7 +34,7 @@ public:
 	void HandleMove(int32 X, int32 Y);
 
 	// Function to check win conditions
-	void CheckWinCondition();
+	void CheckWinCondition(int32 X, int32 Y);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
 	UAIPlayer* AIPlayer;

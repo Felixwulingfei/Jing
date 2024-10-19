@@ -19,4 +19,10 @@ public:
 
 private:
 	FIntPoint MakeRandomMove(const TArray<TArray<int32>>& Board);
+
+	// Find Winning
+	FIntPoint FindWinningMove(const TArray<TArray<int32>>& Board, int32 Player);
+
+	// Find Blocking
+	FIntPoint FindBlockingMove(const TArray<TArray<int32>>& Board, int32 Player);
 };
