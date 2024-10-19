@@ -182,11 +182,10 @@ void ATTTPlayerController::PerformMouseClickTrace()
 	if (this->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
 	{
 		FVector TraceStart = WorldLocation;
-		FVector TraceEnd = TraceStart + (WorldDirection * 10000.f);  // Set the trace distance to 10,000 units
+		FVector TraceEnd = TraceStart + (WorldDirection * 10000.f);
 
 		FHitResult HitResult;
 
-		// Perform the line trace
 		GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility);
 
 		if (HitResult.IsValidBlockingHit())
@@ -196,12 +195,12 @@ void ATTTPlayerController::PerformMouseClickTrace()
 			{
 				if (ATTTBlock* Block = Cast<ATTTBlock>(HitActor))
 				{
-					Block->BlockClicked(GameManager->CurrentPlayer);  // Trigger block clicked logic
+					Block->BlockClicked(GameManager->CurrentPlayer);
 					bIsCooldownActive = true;
 				}
 				if (AGameOptionBlock* Block = Cast<AGameOptionBlock>(HitActor))
 				{
-					Block->OnBlockClicked();  // Trigger block clicked logic
+					Block->OnBlockClicked(); 
 					bIsCooldownActive = true;
 				}
 				

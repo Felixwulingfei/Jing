@@ -61,7 +61,6 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 	
-	// A reference to your GameManager UObject
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTTTGameManager* GameManager;
 	

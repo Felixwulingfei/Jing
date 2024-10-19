@@ -100,7 +100,7 @@ void UTTTGameManager::CheckWinCondition(int32 X, int32 Y)
 	{
 		for (int32 j = 0; j < 3; j++)
 		{
-			if (Board[i][j] == 0)  // If there's at least one empty cell
+			if (Board[i][j] == 0)  // at least one empty cell
 			{
 				bBoardFull = false;
 				break;
