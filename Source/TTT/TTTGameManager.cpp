@@ -35,11 +35,8 @@ void UTTTGameManager::HandleMove(int32 X, int32 Y)
 
 		CheckWinCondition();
 
-		// Switch player
-		CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
-
 		// If it's AI's turn, trigger AI move
-		if (GameMode == EGameMode::GM_AIVsPlayer && CurrentPlayer == 2)
+		if (GameMode == EGameMode::GM_AIVsPlayer)
 		{
 			if (AIPlayer)
 			{
@@ -53,14 +50,18 @@ void UTTTGameManager::HandleMove(int32 X, int32 Y)
 						if (Block && Block->X == Move.X && Block->Y == Move.Y)
 						{
 							// Trigger the block's click event
-							Board[Move.X][Move.Y] = CurrentPlayer;
-							Block->BlockChangeColor(CurrentPlayer);
+							Board[Move.X][Move.Y] = 2;
+							Block->BlockChangeColor(2);
 							break;
 						}
 					}
 				}
 			}
 			
+		}
+		else
+		{
+			CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
 		}
 	}
 }
