@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TTTGameManager.h"
+#include "TTTGameUI.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "TTTPlayerController.generated.h"
@@ -54,12 +55,21 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
 	void OnSetDestinationReleased();
 	void OnTouchTriggered();
 	void OnTouchReleased();
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UUserWidget> GameUIClass;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UTTTGameUI* GameUI;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTTTGameManager* GameManager;
@@ -76,11 +86,14 @@ protected:
 	FTimerHandle CooldownTimerHandle;
 	float CooldownDuration = 0.5f;
 	bool bIsCooldownActive = false;
+
+	bool bIsGameEnd = false;
 	
 	// Initialize the board with blocks
 	void InitializeBoard();
 	void PerformMouseClickTrace();
 	void ResetCooldown();
+	void UpdateGameUI();
 
 private:
 	FVector CachedDestination;
