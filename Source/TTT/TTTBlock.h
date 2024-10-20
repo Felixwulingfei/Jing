@@ -39,7 +39,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
 	int32 Y;
-	
+
 	UTTTGameManager* GameManager;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
@@ -53,6 +53,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Materials")
 	UMaterialInstance* MaterialInstance_Player2;
-
-	bool bIsMarked = false;
 };

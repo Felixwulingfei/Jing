@@ -22,7 +22,6 @@ ATTTBlock::ATTTBlock()
 
 void ATTTBlock::BlockClicked(int PlayerNum)
 {
-	if (bIsMarked) return;
 	if (GameManager)
 	{
 		GameManager->HandleMove(X, Y);
@@ -48,7 +47,7 @@ void ATTTBlock::BlockChangeColor(int PlayerNum)
 				break;
 			}
 		}
-		bIsMarked = true;
+			
 	}
 }
 

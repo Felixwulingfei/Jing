@@ -14,6 +14,12 @@ enum class EGameMode : uint8
 	GM_AIVsPlayer UMETA(DisplayName = "AI vs Player"),
 	GM_LocalPlayerVsPlayer UMETA(DisplayName = "Local Player vs Player")
 };
+UENUM(BlueprintType)
+enum class EDifficultyLevel : uint8
+{
+	DL_Easy UMETA(DisplayName = "Easy"),
+	DL_Hard UMETA(DisplayName = "Hard")
+};
 
 UCLASS()
 class TTT_API UTTTGameManager : public UObject
@@ -32,7 +38,7 @@ public:
 	EGameMode GameMode;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
-	EDifficultyLevel DifficultyLevel = EDifficultyLevel::DL_Easy;
+	EDifficultyLevel DifficultyLevel;
 	
 	void HandleMove(int32 X, int32 Y);
 
@@ -44,7 +50,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game")
 	TArray<ATTTBlock*> Blocks;
-
-	int bIsGameEnd = 0;
-	int WinPlayer = 0;
 };
