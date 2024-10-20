@@ -5,17 +5,21 @@
 
 FIntPoint UAIPlayer::MakeMove(const TArray<TArray<int32>>& Board)
 {
-	FIntPoint WinningMove = FindWinningMove(Board, 2);
-	if (WinningMove.X != -1 && WinningMove.Y != -1)
+	if (AILevel == EDifficultyLevel::DL_Hard)
 	{
-		return WinningMove; 
+		FIntPoint WinningMove = FindWinningMove(Board, 2);
+        if (WinningMove.X != -1 && WinningMove.Y != -1)
+        {
+        	return WinningMove; 
+        }
+    
+        FIntPoint BlockingMove = FindBlockingMove(Board, 1);
+        if (BlockingMove.X != -1 && BlockingMove.Y != -1)
+        {
+        	return BlockingMove; 
+        }
 	}
-
-	FIntPoint BlockingMove = FindBlockingMove(Board, 1);
-	if (BlockingMove.X != -1 && BlockingMove.Y != -1)
-	{
-		return BlockingMove; 
-	}
+	
 	
 	return MakeRandomMove(Board);
 }

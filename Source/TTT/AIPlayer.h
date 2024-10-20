@@ -5,6 +5,14 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "AIPlayer.generated.h"
+class TTTGameManager;
+
+UENUM(BlueprintType)
+enum class EDifficultyLevel : uint8
+{
+	DL_Easy UMETA(DisplayName = "Easy"),
+	DL_Hard UMETA(DisplayName = "Hard")
+};
 
 /**
  * 
@@ -16,6 +24,8 @@ class TTT_API UAIPlayer : public UObject
 public:
 	// Function to make a move
 	FIntPoint MakeMove(const TArray<TArray<int32>>& Board);
+	
+	EDifficultyLevel AILevel;
 
 private:
 	FIntPoint MakeRandomMove(const TArray<TArray<int32>>& Board);
@@ -25,4 +35,5 @@ private:
 
 	// Find Blocking
 	FIntPoint FindBlockingMove(const TArray<TArray<int32>>& Board, int32 Player);
+
 };

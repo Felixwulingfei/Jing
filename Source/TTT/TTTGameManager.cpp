@@ -21,7 +21,6 @@ UTTTGameManager::UTTTGameManager()
 	
 	if (GameMode == EGameMode::GM_AIVsPlayer)
 	{
-		// Initialize AI player
 		AIPlayer = NewObject<UAIPlayer>(UAIPlayer::StaticClass());
 	}
 }
@@ -29,31 +28,33 @@ UTTTGameManager::UTTTGameManager()
 
 void UTTTGameManager::HandleMove(int32 X, int32 Y)
 {
-	if (Board[X][Y] == 0)  // If the cell is empty
+	if (Board[X][Y] == 0)
 	{
-		Board[X][Y] = CurrentPlayer;  // Set the current player's symbol
+		Board[X][Y] = CurrentPlayer;
+		CheckWinCondition(X, Y);
 
-
-		// If it's AI's turn, trigger AI move
+		if (bIsGameEnd == 1)
+		{
+			return;  // 如果玩家获胜，不执行后续的AI操作
+		}
+		
 		if (GameMode == EGameMode::GM_AIVsPlayer)
 		{
 			if (AIPlayer)
 			{
-				// Let AI make its move
+				AIPlayer->AILevel = DifficultyLevel;
 				FIntPoint Move = AIPlayer->MakeMove(Board);
 				if (Move.X != -1 && Move.Y != -1)
 				{
-					// Find the corresponding block based on the AI's move
 					for (ATTTBlock* Block : Blocks)
 					{
 						if (Block && Block->X == Move.X && Block->Y == Move.Y)
 						{
-							// Trigger the block's click event
 							Board[Move.X][Move.Y] = 2;
 							Block->BlockChangeColor(2);
-							break;
 						}
 					}
+					CheckWinCondition(Move.X, Move.Y);
 				}
 			}
 			
@@ -62,8 +63,6 @@ void UTTTGameManager::HandleMove(int32 X, int32 Y)
 		{
 			CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
 		}
-		
-		CheckWinCondition(X,Y);
 	}
 }
 
@@ -74,24 +73,32 @@ void UTTTGameManager::CheckWinCondition(int32 X, int32 Y)
 	if (Board[X][0] == Player && Board[X][1] == Player && Board[X][2] == Player)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins : row %d"), Player, X);
+		bIsGameEnd = 1;
+		WinPlayer = Player;
 		return;
 	}
 
 	if (Board[0][Y] == Player && Board[1][Y] == Player && Board[2][Y] == Player)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins : column %d"), Player, Y);
+		bIsGameEnd = 1;
+		WinPlayer = Player;
 		return;
 	}
 
 	if (X == Y && Board[0][0] == Player && Board[1][1] == Player && Board[2][2] == Player)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins"), Player);
+		bIsGameEnd = 1;
+		WinPlayer = Player;
 		return;
 	}
 
 	if (X + Y == 2 && Board[0][2] == Player && Board[1][1] == Player && Board[2][0] == Player)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins"), Player);
+		bIsGameEnd = 1;
+		WinPlayer = Player;
 		return;
 	}
 
@@ -100,7 +107,7 @@ void UTTTGameManager::CheckWinCondition(int32 X, int32 Y)
 	{
 		for (int32 j = 0; j < 3; j++)
 		{
-			if (Board[i][j] == 0)  // at least one empty cell
+			if (Board[i][j] == 0)  
 			{
 				bBoardFull = false;
 				break;
@@ -110,6 +117,8 @@ void UTTTGameManager::CheckWinCondition(int32 X, int32 Y)
 
 	if (bBoardFull)
 	{
+		bIsGameEnd = 2;
 		UE_LOG(LogTemp, Warning, TEXT("The game is a draw"));
 	}
 }
+

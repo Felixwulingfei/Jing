@@ -32,6 +32,23 @@ void ATTTPlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 	InitializeBoard();
+	if (GameUIClass)
+	{
+		GameUI = CreateWidget<UTTTGameUI>(this, GameUIClass);
+		if (GameUI)
+		{
+			GameUI->AddToViewport();
+		}
+	}
+}
+
+void ATTTPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if(!bIsGameEnd)
+	{
+		UpdateGameUI();
+	}
 }
 
 void ATTTPlayerController::SetupInputComponent()
@@ -175,7 +192,7 @@ void ATTTPlayerController::InitializeBoard()
 
 void ATTTPlayerController::PerformMouseClickTrace()
 {
-	if (bIsCooldownActive) return;
+	if (bIsCooldownActive || bIsGameEnd) return;
 	
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, this, &ATTTPlayerController::ResetCooldown, CooldownDuration, false);
 	FVector WorldLocation, WorldDirection;
@@ -214,4 +231,42 @@ void ATTTPlayerController::PerformMouseClickTrace()
 void ATTTPlayerController::ResetCooldown()
 {
 	bIsCooldownActive = false;
+}
+
+void ATTTPlayerController::UpdateGameUI()
+{
+	if (GameUI && GameManager)
+	{
+		FString ModeText = (GameManager->GameMode == EGameMode::GM_AIVsPlayer) ? "AI vs Player" : "Local Player vs Player";
+		GameUI->UpdateModeText(ModeText);
+
+		if (GameManager->GameMode == EGameMode::GM_AIVsPlayer)
+		{
+			FString DifficultyText = (GameManager->DifficultyLevel == EDifficultyLevel::DL_Easy) ? "Easy" : "Hard";
+			GameUI->UpdateDifficultyText(DifficultyText);
+		}
+		else
+		{
+			GameUI->UpdateDifficultyText("N/A");
+		}
+
+		// Update the turn text
+		if (GameManager->bIsGameEnd == 0)
+		{
+			FString TurnText = (GameManager->CurrentPlayer == 1) ? "Player 1's Turn" : "Player 2's Turn";
+			GameUI->UpdateTurnText(TurnText);
+		}
+		else if (GameManager->bIsGameEnd == 1)
+		{
+			FString TurnText = FString::Printf(TEXT("Player %d wins"), GameManager->WinPlayer);
+			GameUI->UpdateTurnText(TurnText);
+			bIsGameEnd = true;
+		}
+		else if (GameManager->bIsGameEnd == 2)
+		{
+			FString TurnText = TEXT("Game Draws");
+			GameUI->UpdateTurnText(TurnText);
+			bIsGameEnd = true;
+		}
+	}
 }
